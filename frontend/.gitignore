@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Svelte
+/public/build/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Data and models
+/data
+
+
+# Logs
+*.log
+
+# Docker
+.dockerignore
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Testing
+.coverage
+htmlcov/
+
+# Miscellaneous
+*.bak
+*.tmp
+*.temp
+
+
+#caches
+/.mypy_cache
+/.ruff_cache
+
+#google drive auth
+client_secrets.json
+
+
+#temporary data files for storage
+/temporary_folder

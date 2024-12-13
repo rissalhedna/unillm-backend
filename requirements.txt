@@ -1,0 +1,13 @@
+pre-commit
+fastapi[standard]
+llama-index
+loguru
+qdrant-client
+llama-index-vector-stores-qdrant
+uvicorn
+llama-index-llms-openai
+spacy
+scrapy
+playwright
+scrapy-playwright
+python-dotenv
