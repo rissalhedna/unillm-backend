@@ -104,14 +104,38 @@ This will generate JSON files with the raw scraped data.
 
 Make sure to run the notebook cells in order and verify that all environment variables are properly set before processing the data.
 
+## Current Status
+
+The chatbot is currently in active development with the following status:
+
+✅ Working Features:
+
+- Basic chatbot functionality
+- Integration with Qdrant database
+- Information retrieval from study-in-germany website
+
+🔧 Known Issues:
+
+- Some bugs in the frontend
+
+🚧 Upcoming Features:
+
+- Search engine fallback system
+- CV matching functionality
+- Enhanced data processing pipeline
+- Improved response accuracy
+- Regular data updates
+
 ## Roadmap
+
+### Current Phase: Phase 1 (In Progress)
 
 ### Phase 1: Core Chatbot Development
 
-- Set up basic infrastructure
-- Implement RAG system
-- Integrate search engine fallback
-- Develop basic frontend (similar to ChatGPT)
+- ✅ Set up basic infrastructure
+- ✅ Implement RAG system
+- 🚧 Integrate search engine fallback
+- 🚧 Develop basic frontend (similar to ChatGPT)
 
 ### Phase 2: Data Collection and Optimization
 
