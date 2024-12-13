@@ -28,7 +28,6 @@ cd unillm
 2. Set up backend:
 
 ```bash
-cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows, use: venv\Scripts\activate
 pip install -r requirements.txt
@@ -155,7 +154,7 @@ Make sure to run the notebook cells in order and verify that all environment var
 
 ### LLM:
 
-- Open-source model: LLaMA 3 7B or Falcon (self-hosted on Linode instance)
+- Open-source model: OpenAI gpt 4
 
 ### RAG Framework:
 
