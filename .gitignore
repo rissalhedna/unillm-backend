@@ -61,3 +61,8 @@ client_secrets.json
 
 #temporary data files for storage
 /temporary_folder
+
+
+.venv/
+.svelte-kit/
+.qdrant/

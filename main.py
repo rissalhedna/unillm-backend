@@ -74,7 +74,10 @@ async def query_endpoint(query: Query):
         raise HTTPException(status_code=400, detail="Query text is required.")
     result = query_qdrant(client, query.collection_name, query.text)
     if not result or "answer" not in result or "sources" not in result:
-        raise ValueError("Invalid response from Qdrant query.")
+        return QueryResponse(
+            answer="Sorry, but it seems there was an error with my database. Please try again later.",
+            sources=[],
+        )
     return QueryResponse(answer=result["answer"], sources=result["sources"])
 
 

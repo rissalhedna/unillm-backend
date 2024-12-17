@@ -21,18 +21,14 @@ SIMILARITY_CUTOFF = 0.7
 def store_in_qdrant(
     client,
     collection_name: Optional[str] = "study-in-germany",
-    directory_name: Optional[str] = "./data/",
+    file_path: Optional[str] = "./data/",
 ):
     max_files = 10
     logging.info(
-        f"Parsing through the {directory_name} directory. MAXIMUM {max_files} files to be uploaded (Change that argument in the function body)"
+        f"Parsing through the {file_path} file. MAXIMUM {max_files} files to be uploaded (Change that argument in the function body)"
     )
     documents = SimpleDirectoryReader(
-        directory_name,
-        recursive=True,
-        num_files_limit=max_files,
-        exclude_hidden=True,
-        required_exts=[".txt"],
+        input_files=[file_path],
         file_metadata=lambda path: {"file_name": path.split("/")[-1]},
     ).load_data()
 
@@ -76,40 +72,54 @@ def store_in_qdrant(
 
 
 def query_qdrant(client, collection_name, query):
-    vector_store = QdrantVectorStore(
-        client=client,
-        collection_name=collection_name,
-        prefer_grpc=True,
-    )
+    try:
+        # Test connection first
+        client.get_collections()
+    except Exception as e:
+        logger.error(f"Failed to connect to Qdrant: {e}")
+        return {
+            "error": "Database connection failed. Please ensure Qdrant server is running.",
+            "details": str(e),
+        }
 
-    index = VectorStoreIndex.from_vector_store(vector_store)
+    try:
+        vector_store = QdrantVectorStore(
+            client=client,
+            collection_name=collection_name,
+            prefer_grpc=True,
+        )
 
-    # Define your custom prompt template
-    custom_prompt_template = PromptTemplate(
-        "You are an AI assistant tasked with answering questions based on the given context. "
-        "Use the following pieces of context to answer the question at the end. "
-        "You will give the most detailed possible answers to help prospective students find the necessary"
-        "information about living and/or studying in Germany."
-        "If you don't know the answer, just say that you don't know, don't try to make up an answer. "
-        "----------------\n"
-        "{context_str}\n"
-        "----------------\n"
-        "Question: {query_str}\n"
-        "Answer: "
-    )
+        index = VectorStoreIndex.from_vector_store(vector_store)
 
-    # Create a retriever from the index
-    retriever = index.as_retriever(similarity_top_k=10)
+        # Define your custom prompt template
+        custom_prompt_template = PromptTemplate(
+            "You are an AI assistant tasked with answering questions based on the given context. "
+            "Use the following pieces of context to answer the question at the end. "
+            "You will give the most detailed possible answers to help prospective students find the necessary"
+            "information about living and/or studying in Germany."
+            "If you don't know the answer, just say that you don't know, don't try to make up an answer. "
+            "----------------\n"
+            "{context_str}\n"
+            "----------------\n"
+            "Question: {query_str}\n"
+            "Answer: "
+        )
 
-    # Create the query engine with the custom prompt
-    query_engine = RetrieverQueryEngine.from_args(
-        retriever, text_qa_template=custom_prompt_template, verbose=True
-    )
+        # Create a retriever from the index
+        retriever = index.as_retriever(similarity_top_k=10)
 
-    # Execute the query
-    response = query_engine.query(query)
+        # Create the query engine with the custom prompt
+        query_engine = RetrieverQueryEngine.from_args(
+            retriever, text_qa_template=custom_prompt_template, verbose=True
+        )
 
-    return {
-        "answer": str(response),
-        "sources": [node.metadata for node in response.source_nodes],
-    }
+        # Execute the query
+        response = query_engine.query(query)
+
+        return {
+            "answer": str(response),
+            "sources": [node.metadata for node in response.source_nodes],
+        }
+    except Exception as e:
+        logger.error(f"Error during query processing: {e}")
+        return {"error": "Query processing failed", "details": str(e)}
