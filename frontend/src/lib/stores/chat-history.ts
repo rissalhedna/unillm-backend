@@ -1,53 +1,39 @@
-import { derived, get, writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { chatMessages } from './chat-messages';
-import { browser } from '$app/environment';
 
 export const chatHistorySubscription = writable();
+export const activeChat = writable<string | null>(null);
 
-const setLocalHistory = <T>(history: T) =>
-	localStorage.setItem('chatHistory', JSON.stringify(history));
-const getLocalHistory = () => JSON.parse(localStorage.getItem('chatHistory') || '{}');
-
-export const chatHistory = derived(chatMessages, ($chatMessages) => {
-	if (!browser) return null;
-
-	const history = localStorage.getItem('chatHistory');
-
-	if (!history && $chatMessages.messages.length === 1) return null;
-
-	if (history && $chatMessages.messages.length === 1) return JSON.parse(history);
-
-	const key = $chatMessages.messages[1].content; //The second message is the query
-	const value = $chatMessages.messages;
-	const obj = { [key]: value };
-
-	if (!history) setLocalHistory(obj);
-
-	const chatHistory = getLocalHistory();
-
-	if (chatHistory) {
-		chatHistory[key] = value;
-		setLocalHistory(chatHistory);
-		chatHistorySubscription.set(chatHistory);
-		return chatHistory;
-	}
-
-	return null;
-});
-
-export const filterHistory = (key: string) => {
-	const history = getLocalHistory();
-	delete history[key];
-	setLocalHistory(history);
-	chatHistorySubscription.set(history);
+// Fetch chats from the database
+export const fetchChats = async () => {
+	const response = await fetch('/api/chats');
+	const chats = await response.json();
+	chatHistorySubscription.set(chats);
 };
 
-const getHistory = (key: string) => getLocalHistory()[key]; //Returns the history for a given key
+export const deleteChat = async (id: string) => {
+	await fetch(`/api/chats/${id}`, { method: 'DELETE' });
+	await fetchChats();
+};
 
-export const loadMessages = (query: string) => {
-	if (get(chatMessages).chatState !== 'idle') return; //Prevents switching between messages while loading
-	if (!query) return;
+export const updateChatTitle = async (id: string, title: string) => {
+	await fetch(`/api/chats/${id}`, {
+		method: 'PATCH',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ title })
+	});
+	await fetchChats();
+};
 
-	const newMessages = getHistory(query);
-	chatMessages.replace({ messages: newMessages, chatState: 'idle' });
+export const loadMessages = async (chatId: string) => {
+	if (get(chatMessages).chatState !== 'idle') return;
+	
+	const response = await fetch(`/api/chats/${chatId}`);
+	const chat = await response.json();
+	
+	chatMessages.replace({ 
+		messages: chat.messages.map(({ role, content }) => ({ role, content })), 
+		chatState: 'idle' 
+	});
+	activeChat.set(chatId);
 };

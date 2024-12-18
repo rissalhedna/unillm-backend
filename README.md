@@ -15,8 +15,11 @@ A chatbot application to provide information for students in Germany, built with
 - Python 3.8+
 - Node.js and npm
 - Git
+- Docker (optional, for containerized backend)
 
 ## Installation
+
+### Option 1: Local Installation
 
 1. Clone the repository:
 
@@ -42,7 +45,32 @@ cd frontend
 npm install
 ```
 
+### Option 2: Docker Backend
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/rissalhedna/unillm.git
+cd unillm
+```
+
+2. Build and start the backend container:
+
+```bash
+docker compose build
+docker compose up -d  # The backend will run on localhost:8000
+```
+
+3. Set up frontend:
+
+```bash
+cd frontend
+npm install
+```
+
 ## Development
+
+### Option 1: Local Development
 
 1. Start the backend server:
 
@@ -66,6 +94,23 @@ npm run dev  # The frontend runs on localhost:3000
 pre-commit run --all-files
 ```
 
+### Option 2: Docker Development
+
+1. Start the backend using Docker:
+
+```bash
+docker compose up -d  # The backend runs on localhost:8000
+```
+
+2. In a new terminal, start the frontend:
+
+```bash
+cd frontend
+npm run dev  # The frontend runs on localhost:3000
+```
+
+3. Access the application at `http://localhost:3000`.
+
 ## Data Pipeline
 
 The data processing pipeline consists of two main components:
@@ -84,7 +129,15 @@ OPENAI_API_KEY=your_openai_key  # For embedding generation
 DEV=["prod", "dev"]
 ```
 
-2. Run the Scrapy scrapers from the scripts folder:
+2. Install required browser for web scraping:
+
+```bash
+playwright install  # Installs all supported browsers
+# Or for a specific browser:
+playwright install chromium
+```
+
+3. Run the Scrapy scrapers from the scripts folder:
 
 ```bash
 cd scripts
@@ -93,7 +146,7 @@ scrapy runspider [scraper_file]
 
 This will generate JSON files with the raw scraped data.
 
-3. Process the data using the notebook:
+4. Process the data using the notebook:
 
 - Open `/notebooks/scraping_cleaning_pipeline.ipynb`
 - This notebook contains all the logic to:
