@@ -11,7 +11,7 @@
     updateChatTitle,
     fetchChats,
     activeChat
-  } from "../stores/chat-history";
+  } from "$lib/stores/chat-history";
   import { MessageSquare, Pencil, Plus, Trash2, Share } from "lucide-svelte";
 
   interface Chat {
@@ -72,20 +72,23 @@
 </script>
 
 <div class="flex flex-col h-full">
-  <div class="flex-none p-4">
+  <div class="flex-none p-2">
     <button
       on:click={handleNewChat}
-      class="w-full flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-3 text-sm transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+      class="w-full flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2 text-sm transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800"
     >
       <Plus class="h-4 w-4" /> New chat
     </button>
   </div>
 
-  <div class="flex-1 overflow-y-auto px-2">
-    <div class="flex flex-col gap-2">
+  <div class="flex-1 overflow-y-auto px-1">
+    <div class="flex flex-col gap-1">
       {#each chats as chat (chat.id)}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
-          class="group relative flex items-center gap-3 rounded-lg px-3 py-3 
+          on:click={() => handleChatSelect(chat.id)}
+          class="group relative flex items-center gap-2 rounded-lg px-2 py-2 cursor-pointer
                 {$activeChat === chat.id
             ? 'bg-gray-100 dark:bg-gray-800'
             : 'hover:bg-gray-50 dark:hover:bg-gray-900'}"
@@ -103,12 +106,9 @@
               autofocus
             />
           {:else}
-            <button
-              on:click={() => handleChatSelect(chat.id)}
-              class="flex-1 text-left text-sm truncate"
-            >
+            <div class="flex-1 text-left text-sm truncate">
               {chat.title}
-            </button>
+            </div>
           {/if}
 
           <DropdownMenu.Root>
@@ -118,6 +118,7 @@
                 builders={[builder]}
                 size="icon"
                 class="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                on:click={(e) => e.stopPropagation()}
               >
                 <span class="sr-only">Open menu</span>
                 <Ellipsis class="h-4 w-4" />
