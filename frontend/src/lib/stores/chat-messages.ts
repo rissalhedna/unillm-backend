@@ -14,7 +14,7 @@ export type ChatCompletionRequestMessage = {
 
 const { subscribe, update, ...store } = writable<ChatTranscript>({
 	messages: [
-		{ role: 'assistant', content: 'Hello, I am your virtual assistant. How can I help you?' },
+		{ role: 'assistant', content: 'Hello, how can I help you today?'},
 	],
 	chatState: 'idle'
 });
@@ -85,7 +85,7 @@ const replace = (messages: ChatTranscript) => {
 const reset = () =>
 	store.set({
 		messages: [
-			{ role: 'assistant', content: 'Hello, I am your virtual assistant. How can I help you?' }
+			{ role: 'assistant', content: 'Hello, how can I help you today?' }
 		],
 		chatState: 'idle'
 	});
