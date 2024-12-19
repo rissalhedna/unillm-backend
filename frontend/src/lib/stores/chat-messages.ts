@@ -1,7 +1,7 @@
 import { get, writable } from 'svelte/store';
 import { activeChat } from './chat-history';
 import { get as getStore } from 'svelte/store';
-
+import { SOURCE_DELIMITER } from '$lib/constants';
 export interface ChatTranscript {
 	messages: ChatCompletionRequestMessage[];
 	chatState: 'idle' | 'loading' | 'error' | 'message';
@@ -35,12 +35,20 @@ const set = async (query: string) => {
 			headers: { 'Content-Type': 'application/json' },
 		});
 		const data = await response.json();
+		console.log('🔄 Response from API:', data);
 		
 		// Update the answer and messages
 		if (get(answer) === '...') answer.set('');
-		answer.update((_a) => _a + data.answer);
+		
+		// Format answer with sources
+		const formattedAnswer = `${data.answer}\n${data.sources.map((source: any) => `${SOURCE_DELIMITER}${source.url}${SOURCE_DELIMITER}`).join('')}`;
+		
+		answer.update((_a) => _a + formattedAnswer);
 		updateMessages(get(answer), 'assistant', 'idle');
 		answer.set('');
+		
+		// Update sources store
+		sources.set(data.sources);
 
 		// Save to database if we have an active chat
 		if (currentActiveChat) {
@@ -98,3 +106,4 @@ const updateMessages = (content: string, role: string, state: 'idle' | 'loading'
 
 export const chatMessages = { subscribe, set, update, reset, replace };
 export const answer = writable<string>('');
+export const sources = writable<string[]>([]);

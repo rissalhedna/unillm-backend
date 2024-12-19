@@ -2,6 +2,7 @@
   import { marked } from "marked";
   import DOMPurify from "isomorphic-dompurify";
   import { onMount } from "svelte";
+  import { SOURCE_DELIMITER } from "$lib/constants";
 
   enum ChatCompletionRequestMessageRoleEnum {
     user = "user",
@@ -48,6 +49,22 @@
       inline: "end",
     });
   });
+
+  // Function to parse message and format with superscript numbers
+  function formatMessageWithSources(message: string) {
+    let sourceCount = 0;
+    
+    // Replace entire &url& pattern (including delimiters) with numbered links
+    const formattedMessage = message.replace(new RegExp(`${SOURCE_DELIMITER}([^${SOURCE_DELIMITER}]+)${SOURCE_DELIMITER}`, 'g'), (fullMatch, url) => {
+      // fullMatch includes the & delimiters, url is just the content between them
+      sourceCount++;
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-5 h-5 text-xs align-top rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors duration-200 no-underline ml-0.5">${sourceCount}</a>`;
+    });
+
+    return formattedMessage;
+  }
+
+  $: formattedMessage = formatMessageWithSources(message);
 </script>
 
 <div class="flex {classSet[type]}">
@@ -62,8 +79,8 @@
         <div class="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.4s]" />
       </div>
     {:else}
-      <div class="prose prose-slate dark:prose-invert max-w-none prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800 prose-pre:p-2 prose-pre:rounded-lg prose-code:text-pink-500 dark:prose-code:text-pink-400 prose-headings:mb-2 prose-p:mb-2 prose-ul:my-2 prose-li:my-0">
-        {@html DOMPurify.sanitize(marked.parse(message).toString())}
+      <div class="prose dark:prose-invert max-w-none">
+        {@html DOMPurify.sanitize(marked.parse(formattedMessage).toString())}
       </div>
     {/if}
   </div>
