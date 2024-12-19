@@ -169,7 +169,7 @@ The chatbot is currently in active development with the following status:
 
 🔧 Known Issues:
 
-- Some bugs in the frontend
+- LLM is not aware of previous messages
 
 🚧 Upcoming Features:
 
@@ -187,8 +187,8 @@ The chatbot is currently in active development with the following status:
 
 - ✅ Set up basic infrastructure
 - ✅ Implement RAG system
+- ✅ Develop basic frontend (similar to ChatGPT)
 - 🚧 Integrate search engine fallback
-- 🚧 Develop basic frontend (similar to ChatGPT)
 
 ### Phase 2: Data Collection and Optimization
 
