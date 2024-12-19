@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from app.utils.router import CentralController
 from app.utils.storage_utils import query_qdrant, store_in_qdrant
 
 load_dotenv()
@@ -72,7 +73,9 @@ class StoreRequest(BaseModel):
 async def query_endpoint(query: Query):
     if not query.text:
         raise HTTPException(status_code=400, detail="Query text is required.")
-    result = query_qdrant(client, query.collection_name, query.text)
+    central_controller = CentralController()
+    result = await central_controller.process_query(client, query.text, query_qdrant)
+    print(result)
     if not result or "answer" not in result or "sources" not in result:
         return QueryResponse(
             answer="Sorry, but it seems there was an error with my database. Please try again later.",

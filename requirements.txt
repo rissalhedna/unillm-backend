@@ -12,3 +12,5 @@ playwright
 scrapy-playwright
 python-dotenv
 rootutils
+langchain
+langchain-community

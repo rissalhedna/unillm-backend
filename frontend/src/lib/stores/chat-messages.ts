@@ -26,11 +26,13 @@ const set = async (query: string) => {
 
 	try {
 		console.log('🔄 Fetching response from API...');
+		const currentMessages = get(chatMessages).messages;
 		const response = await fetch("http://localhost:8000/query", {
 			method: "POST",
 			body: JSON.stringify({
 				text: query,
 				collection_name: "study-in-germany",
+				chat_history: currentMessages
 			}),
 			headers: { 'Content-Type': 'application/json' },
 		});
