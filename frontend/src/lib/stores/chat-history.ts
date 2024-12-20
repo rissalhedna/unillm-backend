@@ -4,7 +4,6 @@ import { chatMessages } from './chat-messages';
 export const chatHistorySubscription = writable();
 export const activeChat = writable<string | null>(null);
 
-// Fetch chats from the database
 export const fetchChats = async () => {
 	const response = await fetch('/api/chats');
 	const chats = await response.json();
@@ -32,7 +31,7 @@ export const loadMessages = async (chatId: string) => {
 	const chat = await response.json();
 	
 	chatMessages.replace({ 
-		messages: chat.messages.map(({ role, content }) => ({ role, content })), 
+		messages: chat.messages.map(({ role, content }: { role: string, content: string }) => ({ role, content })), 
 		chatState: 'idle' 
 	});
 	activeChat.set(chatId);

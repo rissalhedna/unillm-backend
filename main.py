@@ -54,8 +54,8 @@ except Exception as e:
     raise RuntimeError(f"Error initializing Qdrant client: {str(e)}")
 
 
-class Query(BaseModel):
-    text: str
+class ChatContext(BaseModel):
+    messages: List[dict]
     collection_name: Optional[str] = "study-in-germany"
 
 
@@ -70,12 +70,11 @@ class StoreRequest(BaseModel):
 
 
 @app.post("/query", response_model=QueryResponse)
-async def query_endpoint(query: Query):
-    if not query.text:
+async def query_endpoint(chatContext: ChatContext):
+    if not chatContext.messages:
         raise HTTPException(status_code=400, detail="Query text is required.")
     central_controller = CentralController()
-    result = await central_controller.process_query(client, query.text, query_qdrant)
-    print(result)
+    result = await central_controller.process_query(client, chatContext.messages, query_qdrant)
     if not result or "answer" not in result or "sources" not in result:
         return QueryResponse(
             answer="Sorry, but it seems there was an error with my database. Please try again later.",

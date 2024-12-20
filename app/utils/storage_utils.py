@@ -14,12 +14,11 @@ from llama_index.core.schema import Document
 from qdrant_client.http import models
 from llama_index.core.postprocessor import SimilarityPostprocessor
 
+from constants import CHUNK_OVERLAP, CHUNK_SIZE, MAX_SOURCES, QDRANT_EMBEDDING_MODEL, QDRANT_LLM_MODEL
+
 logger = logging.getLogger(__name__)
 
-CHUNK_SIZE = 512
-CHUNK_OVERLAP = 50
-SIMILARITY_TOP_K = 10
-SIMILARITY_CUTOFF = 0.78
+
 
 
 def store_in_qdrant(
@@ -72,8 +71,8 @@ def store_in_qdrant(
         class_name=None,
     )  # type: ignore
 
-    embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
-    llm = OpenAI(model="gpt-4o")
+    embed_model = OpenAIEmbedding(model=QDRANT_EMBEDDING_MODEL)
+    llm = OpenAI(model=QDRANT_LLM_MODEL)
 
     Settings.embed_model = embed_model
     Settings.llm = llm
@@ -111,70 +110,43 @@ def query_qdrant(client, collection_name, query):
 
         index = VectorStoreIndex.from_vector_store(vector_store)
         
-        # Modify retriever settings to be more lenient
+        # Modify retriever to only fetch relevant documents
         retriever = index.as_retriever(
-            similarity_top_k=SIMILARITY_TOP_K,
+            similarity_top_k=MAX_SOURCES,
             filters=None,
         )
-        custom_prompt_template = PromptTemplate(
-            "You are a knowledgeable educational advisor specializing in German higher education and life in Germany. "
-            "Based on the provided context, your task is to assist prospective students with accurate and comprehensive information. "
-            "\nGuidelines:"
-            "\n- Provide detailed, well-structured answers focusing on practical information"
-            "\n- Include specific requirements, deadlines, or processes when relevant"
-            "\n- Cite specific German regulations or institutions when applicable"
-            "\n- Break down complex procedures into clear steps"
-            "\n- If information is time-sensitive, mention that details may change"
-            "\n- If the answer is not found in the context, clearly state that and suggest where to find reliable information"
-            "\n- If the query is ambiguous, do not give any sources, and answer the question"
-            "\n----------------\n"
-            "{context_str}\n"
-            "----------------\n"
-            "Question: {query_str}\n"
-            "Answer: Let me help you with that.\n"
-        )
-        # Simplify the query engine configuration for testing
-        query_engine = RetrieverQueryEngine.from_args(
-            retriever,
-            text_qa_template=custom_prompt_template,
-            verbose=True,
-            node_postprocessors=[
-                SimilarityPostprocessor(similarity_cutoff=SIMILARITY_CUTOFF)
-            ],
-        )
 
-        # Add debug logging
-        logger.info(f"Executing query: {query}")
-        response = query_engine.query(query)
-        logger.info(f"Raw response: {response}")
-        logger.info(f"Number of source nodes: {len(response.source_nodes)}")
-
-        # Process response only if source nodes exist
-        if not response.source_nodes:
-            logger.warning("No source nodes found in response")
+        # Get raw nodes instead of using query engine
+        nodes = retriever.retrieve(query)
+        
+        if not nodes:
+            logger.warning("No source nodes found")
             return {
-                "answer": "No relevant information found in the database.",
+                "context": "",
                 "sources": [],
-                "scores": []
             }
 
+        # Combine text from all relevant nodes
+        context_text = "\n\n".join([node.node.text for node in nodes])
+
+        # Process sources
         sorted_sources = sorted(
-            response.source_nodes,
+            nodes,
             key=lambda x: x.score if hasattr(x, 'score') else 0,
             reverse=True
         )
 
-        # Filter sources to keep only unique URLs
+        # Filter unique sources
         seen_urls = set()
         unique_sources = []
         for node in sorted_sources:
-            url = node.metadata.get('url')
+            url = node.node.metadata.get('url')
             if url and url not in seen_urls:
                 seen_urls.add(url)
-                unique_sources.append(node.metadata)
+                unique_sources.append(node.node.metadata)
 
         return {
-            "answer": str(response),
+            "context": context_text,
             "sources": unique_sources,
         }
 

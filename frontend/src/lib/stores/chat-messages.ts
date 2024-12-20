@@ -23,16 +23,14 @@ const set = async (query: string) => {
 	console.log('📝 Processing new message:', query);
 	updateMessages(query, 'user', 'loading');
 	const currentActiveChat = getStore(activeChat);
+	const currentMessages = get(chatMessages).messages;
 
 	try {
 		console.log('🔄 Fetching response from API...');
-		const currentMessages = get(chatMessages).messages;
 		const response = await fetch("http://localhost:8000/query", {
 			method: "POST",
 			body: JSON.stringify({
-				text: query,
-				collection_name: "study-in-germany",
-				chat_history: currentMessages
+				messages: currentMessages,
 			}),
 			headers: { 'Content-Type': 'application/json' },
 		});
