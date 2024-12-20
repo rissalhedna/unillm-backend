@@ -74,9 +74,9 @@
   >
     {#if isLoading && type === 'assistant'}
       <div class="flex gap-1.5">
-        <div class="w-2 h-2 bg-black rounded-full animate-bounce" />
-        <div class="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.2s]" />
-        <div class="w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:0.4s]" />
+        <div class="w-1 h-1 bg-black rounded-full animate-bounce" />
+        <div class="w-1 h-1 bg-black rounded-full animate-bounce [animation-delay:0.2s]" />
+        <div class="w-1 h-1 bg-black rounded-full animate-bounce [animation-delay:0.4s]" />
       </div>
     {:else}
       <div class="prose dark:prose-invert max-w-none">

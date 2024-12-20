@@ -40,7 +40,6 @@
 					body: JSON.stringify({ 
 						title: currentQuery, 
 						messages: [
-							{ role: 'assistant', content: 'Hello, how can I help you today?' },
 							{ role: 'user', content: currentQuery }
 						] 
 					})
@@ -67,13 +66,47 @@
 	$: if ($answer) {
 		setTimeout(scrollToBottom, 0);
 	}
+
+	// Add these arrays to your existing script section
+	const popularTopics = [
+		{
+			icon: "🏛️",
+			title: "How do I apply for a German student visa?",
+			query: "What are the steps to apply for a student visa in Germany?"
+		},
+		{
+			icon: "🏠",
+			title: "Finding accommodation in Germany",
+			query: "How can I find an apartment in Germany? What is the process?"
+		},
+
+	];
+
+	const gettingStarted = [
+		{
+			icon: "🗣️",
+			title: "Learning German language",
+			query: "What are the best ways to learn German? Where should I start?"
+		},
+		{
+			icon: "🎓",
+			title: "Study in Germany",
+			query: "What are the requirements to study at a German university?"
+		},
+
+	];
+
+	function handleImageError(event: Event) {
+		const target = event.target as HTMLImageElement;
+		target.outerHTML = '<span class="text-4xl">🇩🇪</span>';
+	}
 </script>
 
 <div class="grid h-screen w-full bg-[#F7F7F8] dark:bg-gray-900 md:grid-cols-[17.5rem_1fr]">
 	<!-- Sidebar -->
-	<div class="hidden border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 md:block">
+	<div class="hidden border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 md:block h-screen overflow-hidden">
 		<div class="flex h-full flex-col">
-			<div class="flex h-14 items-center border-b border-gray-200 dark:border-gray-700 px-4 lg:h-[7rem] lg:px-6">
+			<div class="flex h-14 items-center border-b border-gray-200 dark:border-gray-700 px-4 lg:h-[60px] lg:px-6">
 				<a href="/" class="flex items-center gap-2 font-semibold text-gray-800 dark:text-white">
 					<span class="text-xl">UniLLM</span>
 				</a>
@@ -95,13 +128,6 @@
 
 		<!-- Main Chat Area -->
 		<main class="flex h-[calc(100vh-60px)] flex-1 flex-col relative">
-			<!-- Welcome message when no messages -->
-			{#if $chatMessages.messages.length === 0}
-				<div class="flex-1 overflow-hidden py-32 px-4 text-center">
-					<h1 class="text-4xl font-bold mb-8 text-gray-800 dark:text-white">Welcome to UniLLM</h1>
-					<p class="text-gray-600 dark:text-gray-300">How can I help you today?</p>
-				</div>
-			{/if}
 
 			<!-- Scrollable Messages Container -->
 			<div 
@@ -110,7 +136,7 @@
 					   scrollbar-thumb-gray-300 scrollbar-thumb-rounded-lg"
 				bind:this={messagesContainer}
 			>
-				<div class="max-w-3xl mx-auto px-6 py-6">
+				<div class="max-w-5xl mx-auto px-4 py-6">
 					<div class="flex flex-col gap-6">
 						{#each $chatMessages.messages as message}
 							<ChatMessage type={message.role} message={message.content} />
@@ -125,16 +151,100 @@
 						{/if}
 					</div>
 				</div>
+							<!-- Welcome message when no messages -->
+			{#if $chatMessages.messages.length === 0}
+			<div class="flex-1 justify-center items-center px-4 pt-12">
+				<!-- Welcome Header -->
+				<div class="text-center mb-8">
+					<div class="flex justify-center mb-6">
+						<div class="w-16 h-16 rounded-full shadow-lg bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+							{#if !import.meta.env.PROD}
+								<!-- Development fallback -->
+								<span class="text-4xl">🇩🇪</span>
+							{:else}
+								<img 
+									src="/german-flag-icon.svg" 
+									alt="German Assistant"
+									class="w-full h-full object-cover rounded-full"
+									on:error={handleImageError}
+								/>
+							{/if}
+						</div>
+					</div>
+					<h1 class="text-4xl font-bold mb-3 text-gray-800 dark:text-white">
+						Welcome to uniLLM
+					</h1>
+					<p class="text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
+						Your information source for everything about Germany - from visa applications to daily life
+					</p>
+				</div>
+
+				<!-- Example Questions Grid -->
+				<div class="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 px-4">
+					<!-- Popular Topics Column -->
+					<div class="space-y-4">
+						<h2 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
+							Popular Topics
+						</h2>
+						<div class="flex flex-col gap-4">
+							{#each popularTopics as {icon, title, query: topicQuery}}
+								<button 
+									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-gray-100 
+										   dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors
+										   flex items-center gap-3 group"
+									on:click={() => {
+										query = topicQuery;
+										handleSubmit();
+									}}
+								>
+									<span class="text-2xl">{icon}</span>
+									<span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 
+											   dark:group-hover:text-white transition-colors">
+										{title}
+									</span>
+								</button>
+							{/each}
+						</div>
+					</div>
+
+					<!-- Getting Started Column -->
+					<div class="space-y-4">
+						<h2 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
+							Getting Started
+						</h2>
+						<div class="flex flex-col gap-4">
+							{#each gettingStarted as {icon, title, query: topicQuery}}
+								<button 
+									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-gray-100 
+										   dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors
+										   flex items-center gap-3 group"
+									on:click={() => {
+										query = topicQuery;
+										handleSubmit();
+									}}
+								>
+									<span class="text-2xl">{icon}</span>
+									<span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 
+											   dark:group-hover:text-white transition-colors">
+										{title}
+									</span>
+								</button>
+							{/each}
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
 			</div>
 
 			<!-- Fixed Input Form -->
 			<div>
-				<div class="max-w-3xl mx-auto px-6 pb-4">
+				<div class="max-w-5xl mx-auto px-4 pb-4">
 					<form
-						class="flex items-end gap-4 relative"
+						class="flex justify-center items-end gap-4 relative"
 						on:submit|preventDefault={handleSubmit}
 					>
-						<div class="relative w-full">
+						<div class="relative w-full max-w-2xl">
 							<textarea 
 								bind:this={textareaElement}
 								bind:value={query} 
@@ -180,7 +290,7 @@
 						</div>
 					</form>
 
-					<div class="flex items-center justify-center gap-2 mt-5">
+					<div class="flex items-center justify-center gap-2 mt-5 max-w-2xl mx-auto">
 						<p class="text-xs text-[#666666] dark:text-gray-400">
 							UniLLM can make mistakes. Consider checking important information.
 						</p>

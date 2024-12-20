@@ -71,7 +71,7 @@
   }
 </script>
 
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full overflow-y-scroll">
   <div class="flex-none p-2">
     <button
       on:click={handleNewChat}
@@ -81,7 +81,7 @@
     </button>
   </div>
 
-  <div class="flex-1 overflow-y-auto px-1">
+  <div class="flex-1 overflow-y-auto px-3">
     <div class="flex flex-col gap-1">
       {#each chats as chat (chat.id)}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
