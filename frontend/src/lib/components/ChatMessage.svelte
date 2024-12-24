@@ -12,7 +12,6 @@
 
   export let type: ChatCompletionRequestMessageRoleEnum;
   export let message: string = "";
-  export let isLoading: boolean = false;
   export { classes as class };
 
   let classes = "";
@@ -50,15 +49,23 @@
     });
   });
 
+  // Configure marked options for better formatting
+  marked.setOptions({
+    gfm: true, // GitHub Flavored Markdown
+    breaks: true, // Convert \n to <br>
+  });
+
   // Function to parse message and format with superscript numbers
   function formatMessageWithSources(message: string) {
     let sourceCount = 0;
     
-    // Replace entire &url& pattern (including delimiters) with numbered links
     const formattedMessage = message.replace(new RegExp(`${SOURCE_DELIMITER}([^${SOURCE_DELIMITER}]+)${SOURCE_DELIMITER}`, 'g'), (fullMatch, url) => {
-      // fullMatch includes the & delimiters, url is just the content between them
-      sourceCount++;
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-5 h-5 text-xs align-top rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors duration-200 no-underline ml-0.5">${sourceCount}</a>`;
+        sourceCount++;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" 
+                  class="inline-flex items-center justify-center w-5 h-5 text-xs 
+                         align-top rounded-full bg-[#dd1c1a]/10 text-[#dd1c1a] 
+                         hover:bg-[#dd1c1a]/20 transition-colors duration-200 
+                         no-underline ml-0.5">${sourceCount}</a>`;
     });
 
     return formattedMessage;
@@ -70,19 +77,17 @@
 <div class="flex {classSet[type]}">
   <div
     use:typeEffect={message}
-    class="max-w-[85%] rounded-3xl px-4 py-2 min-h-[2rem] break-words {classes} {messageClasses[type]}"
+    class="max-w-[100%] rounded-lg px-4 py-3 min-h-[2rem] break-words {classes} {messageClasses[type]}"
   >
-    {#if isLoading && type === 'assistant'}
-      <div class="flex gap-1.5">
-        <div class="w-1 h-1 bg-black rounded-full animate-bounce" />
-        <div class="w-1 h-1 bg-black rounded-full animate-bounce [animation-delay:0.2s]" />
-        <div class="w-1 h-1 bg-black rounded-full animate-bounce [animation-delay:0.4s]" />
-      </div>
-    {:else}
-      <div class="prose dark:prose-invert max-w-none">
+      <div class="prose prose-sm dark:prose-invert max-w-none
+                  prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0
+                  prose-p:my-2 prose-p:leading-relaxed
+                  prose-li:my-0.5
+                  prose-code:px-1 prose-code:py-0.5 prose-code:bg-gray-100 prose-code:rounded
+                  prose-pre:bg-gray-100 prose-pre:p-3 prose-pre:rounded-lg
+                  dark:prose-code:bg-gray-800 dark:prose-pre:bg-gray-800">
         {@html DOMPurify.sanitize(marked.parse(formattedMessage).toString())}
       </div>
-    {/if}
   </div>
   <div bind:this={scrollToDiv} />
 </div>

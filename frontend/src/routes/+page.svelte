@@ -9,7 +9,7 @@
 
 	let query = '';
 	let messagesContainer: HTMLDivElement;
-	let isLoading = false;
+	$: isLoading = $chatMessages.chatState === 'loading';
 	let textareaElement: HTMLTextAreaElement;
 
 	const scrollToBottom = () => {
@@ -22,13 +22,15 @@
 		if (!query.trim()) return;
 		const currentQuery = query;
 		query = '';
-		isLoading = true;
 		answer.set('');
 
 		// Reset textarea height
 		if (textareaElement) {
 			textareaElement.style.height = '1.25rem';
 		}
+
+		// Add this line to scroll to bottom when loading starts
+		setTimeout(scrollToBottom, 0);
 
 		// If this is a new chat (no active chat), create it first
 		if (!$activeChat) {
@@ -58,12 +60,14 @@
 
 		// Process the message
 		await chatMessages.set(currentQuery);
-		
-		scrollToBottom();
-		isLoading = false;
 	};
 
 	$: if ($answer) {
+		setTimeout(scrollToBottom, 0);
+	}
+
+	// Add this reactive statement to scroll when messages change
+	$: if ($chatMessages.messages.length > 0) {
 		setTimeout(scrollToBottom, 0);
 	}
 
@@ -102,11 +106,11 @@
 	}
 </script>
 
-<div class="grid h-screen w-full bg-[#F7F7F8] dark:bg-gray-900 md:grid-cols-[17.5rem_1fr]">
-	<!-- Sidebar -->
-	<div class="hidden border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 md:block h-screen overflow-hidden">
+<div class="grid h-screen w-full bg-gradient-to-br from-[#f3f4f6] to-[#e5e7eb] dark:from-gray-900 dark:to-gray-800 md:grid-cols-[17.5rem_1fr] relative overflow-hidden">
+	<!-- Sidebar - removed border-r -->
+	<div class="hidden bg-[#f8f9fa] dark:bg-gray-800/50 md:block h-screen overflow-hidden backdrop-blur-sm border-r border-[#dd1c1a]/10">
 		<div class="flex h-full flex-col">
-			<div class="flex h-14 items-center border-b border-gray-200 dark:border-gray-700 px-4 lg:h-[60px] lg:px-6">
+			<div class="flex h-14 items-center px-4 lg:h-[60px] lg:px-6 bg-[#dd1c1a]/5 dark:bg-gray-800/80">
 				<a href="/" class="flex items-center gap-2 font-semibold text-gray-800 dark:text-white">
 					<span class="text-xl">UniLLM</span>
 				</a>
@@ -120,10 +124,11 @@
 		</div>
 	</div>
 
-	<!-- Main Content -->
-	<div class="flex h-screen flex-col bg-white dark:bg-gray-900">
-		<!-- Header -->
-		<header class="flex h-14 items-center gap-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:h-[60px] lg:px-6">
+	<!-- Main Content - updated background colors -->
+	<div class="flex h-screen flex-col bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm">
+		<!-- Header - removed border-b -->
+		<header class="flex h-14 items-center gap-4 bg-[#f8f9fa]/90 dark:bg-gray-800/90 
+				   px-4 lg:h-[60px] lg:px-6 border-b border-[#dd1c1a]/10">
 		</header>
 
 		<!-- Main Chat Area -->
@@ -137,17 +142,44 @@
 				bind:this={messagesContainer}
 			>
 				<div class="max-w-5xl mx-auto px-4 py-6">
-					<div class="flex flex-col gap-6">
+					<div class="flex flex-col gap-4">
 						{#each $chatMessages.messages as message}
-							<ChatMessage type={message.role} message={message.content} />
+							<ChatMessage 
+								type={message.role} 
+								message={message.content} 
+								class="px-4 py-3 rounded-lg
+									   {message.role === 'user' ? 
+									   'bg-[#dd1c1a]/5 ml-auto max-w-[85%] md:max-w-[75%]' : 
+									   'bg-gray-100 dark:bg-gray-800/50 mr-auto max-w-[85%] md:max-w-[75%]'}
+									   border border-[#dd1c1a]/10
+									   shadow-sm" 
+							/>
 						{/each}
 
 						{#if $answer}
-							<ChatMessage type="assistant" message={$answer} />
+							<ChatMessage 
+								type="assistant" 
+								message={$answer}
+								class="px-4 py-3 rounded-lg
+									   bg-gray-100 dark:bg-gray-800/50
+									   mr-auto max-w-[85%] md:max-w-[75%]
+									   border border-[#dd1c1a]/10
+									   shadow-sm" 
+							/>
 						{/if}
 
 						{#if isLoading}
-							<ChatMessage type="assistant" isLoading={true} />
+							<div class="px-4 py-3 rounded-lg
+									  bg-gray-100 dark:bg-gray-800/50
+									  mr-auto max-w-[85%] md:max-w-[75%]
+									  border border-[#dd1c1a]/10
+									  shadow-sm">
+								<div class="flex gap-1">
+									<span class="w-1 h-1 rounded-full bg-black animate-bounce [animation-delay:-0.3s]"></span>
+									<span class="w-1 h-1 rounded-full bg-black animate-bounce [animation-delay:-0.15s]"></span>
+									<span class="w-1 h-1 rounded-full bg-black animate-bounce"></span>
+								</div>
+							</div>
 						{/if}
 					</div>
 				</div>
@@ -155,9 +187,11 @@
 			{#if $chatMessages.messages.length === 0}
 			<div class="flex-1 justify-center items-center px-4 pt-12">
 				<!-- Welcome Header -->
-				<div class="text-center mb-8">
+				<div class="text-center">
 					<div class="flex justify-center mb-6">
-						<div class="w-16 h-16 rounded-full shadow-lg bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+						<div class="w-16 h-16 rounded-full shadow-lg bg-gray-50 dark:bg-gray-800 
+									flex items-center justify-center
+									border-2 border-[#dd1c1a]/20">
 							{#if !import.meta.env.PROD}
 								<!-- Development fallback -->
 								<span class="text-4xl">🇩🇪</span>
@@ -171,12 +205,9 @@
 							{/if}
 						</div>
 					</div>
-					<h1 class="text-4xl font-bold mb-3 text-gray-800 dark:text-white">
-						Welcome to uniLLM
-					</h1>
-					<p class="text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
-						Your information source for everything about Germany - from visa applications to daily life
-					</p>
+					<h1 class="text-4xl font-bold mb-20 text-gray-800 dark:text-white">
+						Ask me anything about Germany!
+					</h1> 
 				</div>
 
 				<!-- Example Questions Grid -->
@@ -189,8 +220,9 @@
 						<div class="flex flex-col gap-4">
 							{#each popularTopics as {icon, title, query: topicQuery}}
 								<button 
-									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-gray-100 
+									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-[#dd1c1a]/5 
 										   dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors
+										   border border-[#dd1c1a]/10 hover:border-[#dd1c1a]/20
 										   flex items-center gap-3 group"
 									on:click={() => {
 										query = topicQuery;
@@ -215,8 +247,9 @@
 						<div class="flex flex-col gap-4">
 							{#each gettingStarted as {icon, title, query: topicQuery}}
 								<button 
-									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-gray-100 
+									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-[#dd1c1a]/5 
 										   dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors
+										   border border-[#dd1c1a]/10 hover:border-[#dd1c1a]/20
 										   flex items-center gap-3 group"
 									on:click={() => {
 										query = topicQuery;
@@ -249,8 +282,8 @@
 								bind:this={textareaElement}
 								bind:value={query} 
 								class="w-full min-h-[7rem] max-h-[12.5rem] py-4 px-5 
-									   rounded-2xl border border-gray-200 
-									   focus:outline-none
+									   rounded-2xl border-2 border-[#dd1c1a]/20 
+									   focus:border-[#dd1c1a]/30 focus:outline-none
 									   bg-gray-100 dark:bg-gray-800 
 									   text-gray-800 dark:text-white 
 									   placeholder:text-gray-400 dark:placeholder:text-gray-400
@@ -278,6 +311,7 @@
 								type="submit"
 								class="absolute right-2 bottom-3
 									   p-2 rounded-full
+									   bg-[#dd1c1a] hover:bg-[#dd1c1a]/90
 									   text-white disabled:bg-gray-400 
 									   transform hover:scale-105
 									   transition-all duration-200
@@ -296,7 +330,7 @@
 						</p>
 						{#if !isLoading && $chatMessages.messages.length > 0}
 							<button 
-								class="text-xs text-[#1E88E5] hover:text-[#1565C0] dark:text-blue-400 
+								class="text-xs text-[#dd1c1a] hover:text-[#dd1c1a]/80 dark:text-[#dd1c1a]/90 
 									   hover:underline transition-colors duration-200"
 								on:click={() => {/* Add regenerate functionality */}}
 							>
