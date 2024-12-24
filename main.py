@@ -17,10 +17,8 @@ app = FastAPI()
 
 # Define the origins that should be allowed to make cross-origin requests
 origins = [
-    "http://localhost",
     "http://localhost:3000",
     "http://localhost:8000",
-    "https://our-frontend-domain.com",
 ]
 
 app.add_middleware(

@@ -3,18 +3,15 @@ from typing import Optional
 import json
 
 from llama_cloud import SentenceSplitter
-from llama_index.core import PromptTemplate, StorageContext
+from llama_index.core import StorageContext
 from llama_index.core.indices.vector_store.base import VectorStoreIndex
-from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.settings import Settings
 from llama_index.embeddings.openai import OpenAIEmbedding
-from llama_index.llms.openai import OpenAI
 from llama_index.vector_stores.qdrant.base import QdrantVectorStore
 from llama_index.core.schema import Document
 from qdrant_client.http import models
-from llama_index.core.postprocessor import SimilarityPostprocessor
 
-from constants import CHUNK_OVERLAP, CHUNK_SIZE, MAX_SOURCES, QDRANT_EMBEDDING_MODEL, QDRANT_LLM_MODEL
+from constants import CHUNK_OVERLAP, CHUNK_SIZE, MAX_SOURCES, QDRANT_EMBEDDING_MODEL
 
 logger = logging.getLogger(__name__)
 
@@ -72,11 +69,8 @@ def store_in_qdrant(
     )  # type: ignore
 
     embed_model = OpenAIEmbedding(model=QDRANT_EMBEDDING_MODEL)
-    llm = OpenAI(model=QDRANT_LLM_MODEL)
-
     Settings.embed_model = embed_model
-    Settings.llm = llm
-
+    
     VectorStoreIndex.from_documents(
         documents,
         storage_context=storage_context,

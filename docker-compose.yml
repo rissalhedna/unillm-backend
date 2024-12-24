@@ -1,7 +1,5 @@
-version: '3.11'
-
 services:
-  api:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,3 +13,21 @@ services:
     command: >
       bash -c "pip install --no-cache-dir -r requirements.txt
       && uvicorn main:app --host 0.0.0.0 --port 8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend:/app
+      - node_modules:/app/node_modules
+    ports:
+      - "3000:3000"
+    command: ["npm", "run", "dev", "--", "--host"]
+    environment:
+      - VITE_BACKEND_URL=http://localhost:8000
+
+volumes:
+  node_modules: {}
