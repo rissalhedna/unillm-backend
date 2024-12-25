@@ -28,3 +28,6 @@ frontend/
 
 .venv/
 temporary_folder/
+
+# Ignore data files if not needed
+data/
