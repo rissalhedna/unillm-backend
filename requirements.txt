@@ -1,27 +1,16 @@
-fastapi==0.115.6
-langchain==0.3.13
-langchain-community==0.3.13
-langchain-core==0.3.27
-langchain-openai==0.2.13
-langchain-text-splitters==0.3.4
-langcodes==3.5.0
-langsmith==0.2.4
-llama-cloud==0.1.6
-llama-index==0.12.6
-llama-index-agent-openai==0.4.0
-llama-index-cli==0.4.0
-llama-index-core==0.12.6
-llama-index-embeddings-openai==0.3.1
-llama-index-indices-managed-llama-cloud==0.6.3
-llama-index-llms-openai==0.3.11
-llama-index-multi-modal-llms-openai==0.4.1
-llama-index-program-openai==0.3.1
-llama-index-question-gen-openai==0.3.0
-llama-index-readers-file==0.4.1
-llama-index-readers-llama-parse==0.4.0
-llama-index-vector-stores-qdrant==0.4.1
-llama-parse==0.5.17
-loguru==0.7.3
-numpy==1.26.4
-openai==1.58.1
-pandas==2.2.
+# pre-commit
+fastapi[standard]
+llama-index
+loguru
+qdrant-client
+llama-index-vector-stores-qdrant
+uvicorn
+llama-index-llms-openai
+# spacy
+# scrapy
+# playwright
+# scrapy-playwright
+python-dotenv
+rootutils
+langchain
+langchain-openai

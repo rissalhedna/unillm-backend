@@ -1,6 +1,30 @@
-app/utils/google_drive_utils.py
+# Ignore development directories
 notebooks/
 scripts/
+
+# Ignore configuration and documentation files
 docker-compose.yml
 dockerfile
 readMe.md
+
+# Ignore test files
+tests/
+*.test.js
+*.spec.js
+
+# Ignore local environment files
+.env
+.env.local
+
+# Ignore build artifacts
+dist/
+build/
+__pycache__/
+
+# Ignore node_modules if not needed
+node_modules/
+
+frontend/
+
+.venv/
+temporary_folder/
