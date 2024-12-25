@@ -55,6 +55,10 @@
 	"type": "module",
 	"dependencies": {
 		"@prisma/client": "^6.1.0",
+		"node": "^23.5.0",
 		"prisma": "^6.1.0"
+	},
+	"engines": {
+		"node": ">=14.0.0"
 	}
 }
