@@ -66,3 +66,5 @@ client_secrets.json
 .venv/
 .svelte-kit/
 .qdrant/
+.vercel/
+.vercel

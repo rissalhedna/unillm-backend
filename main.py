@@ -18,6 +18,8 @@ app = FastAPI()
 # Define the origins that should be allowed to make cross-origin requests
 origins = [
     "http://localhost:3000",
+    "https://unillm-frontend-2majawhec-rissals-projects.vercel.app/"
+    "https://unillm-rissals-projects.vercel.app/"
     "http://localhost:8000",
 ]
 
