@@ -13,7 +13,7 @@
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"prebuild": "npx prisma generate"
+		"prebuild": "prisma generate"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
