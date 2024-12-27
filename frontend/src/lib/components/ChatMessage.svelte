@@ -58,13 +58,13 @@
   // Function to parse message and format with superscript numbers
   function formatMessageWithSources(message: string) {
     let sourceCount = 0;
-    
+
     const formattedMessage = message.replace(new RegExp(`${SOURCE_DELIMITER}([^${SOURCE_DELIMITER}]+)${SOURCE_DELIMITER}`, 'g'), (fullMatch, url) => {
         sourceCount++;
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" 
-                  class="inline-flex items-center justify-center w-5 h-5 text-xs 
-                         align-top rounded-full bg-[#dd1c1a]/10 text-[#dd1c1a] 
-                         hover:bg-[#dd1c1a]/20 transition-colors duration-200 
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer"
+                  class="inline-flex items-center justify-center w-5 h-5 text-xs
+                         align-top rounded-full bg-[#dd1c1a]/10 text-[#dd1c1a]
+                         hover:bg-[#dd1c1a]/20 transition-colors duration-200
                          no-underline ml-0.5">${sourceCount}</a>`;
     });
 

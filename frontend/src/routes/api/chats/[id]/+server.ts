@@ -26,4 +26,4 @@ export const DELETE: RequestHandler = async ({ params }) => {
     where: { id: params.id }
   });
   return new Response(null, { status: 204 });
-}; 
+};

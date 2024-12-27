@@ -111,8 +111,11 @@ class HandbookGermanySpider(scrapy.Spider):
         self.logger.info(f"Parsing URL: {response.url}")
 
         # Extract the title
-        title = ( response.css(".page-title *::text").get() or response.css("title::text").get(default="").strip() )
-        
+        title = (
+            response.css(".page-title *::text").get()
+            or response.css("title::text").get(default="").strip()
+        )
+
         if not title:
             self.logger.warning(f"No title found for URL: {response.url}")
 

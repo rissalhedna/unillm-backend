@@ -1,11 +1,13 @@
 # pre-commit
-fastapi[standard]
+fastapi
 llama-index
+llama-index-llms-openai
+llama-index-llms-huggingface
+llama-index-embeddings-huggingface
 loguru
 qdrant-client
 llama-index-vector-stores-qdrant
 uvicorn
-llama-index-llms-openai
 # spacy
 # scrapy
 # playwright
@@ -14,3 +16,5 @@ python-dotenv
 rootutils
 langchain
 langchain-openai
+torch
+transformers

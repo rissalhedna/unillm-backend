@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
     title,
     messageCount: messages.length
   });
-  
+
   try {
     const chat = await prisma.chat.create({
       data: {

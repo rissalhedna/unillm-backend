@@ -10,13 +10,13 @@ export const POST: RequestHandler = async ({ params, request }) => {
         chatId: params.id,
         messageCount: messages.length
     });
-    
+
     try {
         // Delete existing messages
         await prisma.message.deleteMany({
             where: { chatId: params.id }
         });
-        
+
         // Create new messages
         const chat = await prisma.chat.update({
             where: { id: params.id },
@@ -31,7 +31,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
             },
             include: { messages: true }
         });
-        
+
         console.log('✅ Messages updated successfully:', {
             chatId: chat.id,
             messageCount: chat.messages.length
@@ -41,4 +41,4 @@ export const POST: RequestHandler = async ({ params, request }) => {
         console.error('❌ Failed to update messages:', error);
         throw error;
     }
-}; 
+};

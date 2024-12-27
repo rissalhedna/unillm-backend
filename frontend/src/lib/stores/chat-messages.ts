@@ -36,17 +36,17 @@ const set = async (query: string) => {
 		});
 		const data = await response.json();
 		console.log('🔄 Response from API:', data);
-		
+
 		// Update the answer and messages
 		if (get(answer) === '...') answer.set('');
-		
+
 		// Format answer with sources
 		const formattedAnswer = `${data.answer}\n${data.sources.map((source: any) => `${SOURCE_DELIMITER}${source.url}${SOURCE_DELIMITER}`).join('')}`;
-		
+
 		answer.update((_a) => _a + formattedAnswer);
 		updateMessages(get(answer), 'assistant', 'idle');
 		answer.set('');
-		
+
 		// Update sources store
 		sources.set(data.sources);
 
@@ -69,7 +69,7 @@ const updateChatInDatabase = async (chatId: string) => {
 		messageCount: currentMessages.length,
 		messages: currentMessages
 	});
-	
+
 	try {
 		const response = await fetch(`/api/chats/${chatId}/messages`, {
 			method: 'POST',

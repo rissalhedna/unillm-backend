@@ -39,11 +39,11 @@
 				const response = await fetch('/api/chats', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ 
-						title: currentQuery, 
+					body: JSON.stringify({
+						title: currentQuery,
 						messages: [
 							{ role: 'user', content: currentQuery }
-						] 
+						]
 					})
 				});
 				const chat = await response.json();
@@ -127,7 +127,7 @@
 	<!-- Main Content - updated background colors -->
 	<div class="flex h-screen flex-col bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm">
 		<!-- Header - removed border-b -->
-		<header class="flex h-14 items-center gap-4 bg-[#f8f9fa]/90 dark:bg-gray-800/90 
+		<header class="flex h-14 items-center gap-4 bg-[#f8f9fa]/90 dark:bg-gray-800/90
 				   px-4 lg:h-[60px] lg:px-6 border-b border-[#dd1c1a]/10">
 		</header>
 
@@ -135,36 +135,36 @@
 		<main class="flex h-[calc(100vh-60px)] flex-1 flex-col relative">
 
 			<!-- Scrollable Messages Container -->
-			<div 
+			<div
 				class="flex-1 overflow-y-auto scroll-smooth
-					   scrollbar scrollbar-w-3 scrollbar-track-transparent 
+					   scrollbar scrollbar-w-3 scrollbar-track-transparent
 					   scrollbar-thumb-gray-300 scrollbar-thumb-rounded-lg"
 				bind:this={messagesContainer}
 			>
 				<div class="max-w-5xl mx-auto px-4 py-6">
 					<div class="flex flex-col gap-4">
 						{#each $chatMessages.messages as message}
-							<ChatMessage 
-								type={message.role} 
-								message={message.content} 
+							<ChatMessage
+								type={message.role}
+								message={message.content}
 								class="px-4 py-3 rounded-lg
-									   {message.role === 'user' ? 
-									   'bg-[#dd1c1a]/5 ml-auto max-w-[85%] md:max-w-[75%]' : 
+									   {message.role === 'user' ?
+									   'bg-[#dd1c1a]/5 ml-auto max-w-[85%] md:max-w-[75%]' :
 									   'bg-gray-100 dark:bg-gray-800/50 mr-auto max-w-[85%] md:max-w-[75%]'}
 									   border border-[#dd1c1a]/10
-									   shadow-sm" 
+									   shadow-sm"
 							/>
 						{/each}
 
 						{#if $answer}
-							<ChatMessage 
-								type="assistant" 
+							<ChatMessage
+								type="assistant"
 								message={$answer}
 								class="px-4 py-3 rounded-lg
 									   bg-gray-100 dark:bg-gray-800/50
 									   mr-auto max-w-[85%] md:max-w-[75%]
 									   border border-[#dd1c1a]/10
-									   shadow-sm" 
+									   shadow-sm"
 							/>
 						{/if}
 
@@ -189,15 +189,15 @@
 				<!-- Welcome Header -->
 				<div class="text-center">
 					<div class="flex justify-center mb-6">
-						<div class="w-16 h-16 rounded-full shadow-lg bg-gray-50 dark:bg-gray-800 
+						<div class="w-16 h-16 rounded-full shadow-lg bg-gray-50 dark:bg-gray-800
 									flex items-center justify-center
 									border-2 border-[#dd1c1a]/20">
 							{#if !import.meta.env.PROD}
 								<!-- Development fallback -->
 								<span class="text-4xl">🇩🇪</span>
 							{:else}
-								<img 
-									src="/german-flag-icon.svg" 
+								<img
+									src="/german-flag-icon.svg"
 									alt="German Assistant"
 									class="w-full h-full object-cover rounded-full"
 									on:error={handleImageError}
@@ -207,7 +207,7 @@
 					</div>
 					<h1 class="text-4xl font-bold mb-20 text-gray-800 dark:text-white">
 						Ask me anything about Germany!
-					</h1> 
+					</h1>
 				</div>
 
 				<!-- Example Questions Grid -->
@@ -219,8 +219,8 @@
 						</h2>
 						<div class="flex flex-col gap-4">
 							{#each popularTopics as {icon, title, query: topicQuery}}
-								<button 
-									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-[#dd1c1a]/5 
+								<button
+									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-[#dd1c1a]/5
 										   dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors
 										   border border-[#dd1c1a]/10 hover:border-[#dd1c1a]/20
 										   flex items-center gap-3 group"
@@ -230,7 +230,7 @@
 									}}
 								>
 									<span class="text-2xl">{icon}</span>
-									<span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 
+									<span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900
 											   dark:group-hover:text-white transition-colors">
 										{title}
 									</span>
@@ -246,8 +246,8 @@
 						</h2>
 						<div class="flex flex-col gap-4">
 							{#each gettingStarted as {icon, title, query: topicQuery}}
-								<button 
-									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-[#dd1c1a]/5 
+								<button
+									class="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-[#dd1c1a]/5
 										   dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors
 										   border border-[#dd1c1a]/10 hover:border-[#dd1c1a]/20
 										   flex items-center gap-3 group"
@@ -257,7 +257,7 @@
 									}}
 								>
 									<span class="text-2xl">{icon}</span>
-									<span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 
+									<span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900
 											   dark:group-hover:text-white transition-colors">
 										{title}
 									</span>
@@ -278,14 +278,14 @@
 						on:submit|preventDefault={handleSubmit}
 					>
 						<div class="relative w-full max-w-2xl">
-							<textarea 
+							<textarea
 								bind:this={textareaElement}
-								bind:value={query} 
-								class="w-full min-h-[7rem] max-h-[12.5rem] py-4 px-5 
-									   rounded-2xl border-2 border-[#dd1c1a]/20 
+								bind:value={query}
+								class="w-full min-h-[7rem] max-h-[12.5rem] py-4 px-5
+									   rounded-2xl border-2 border-[#dd1c1a]/20
 									   focus:border-[#dd1c1a]/30 focus:outline-none
-									   bg-gray-100 dark:bg-gray-800 
-									   text-gray-800 dark:text-white 
+									   bg-gray-100 dark:bg-gray-800
+									   text-gray-800 dark:text-white
 									   placeholder:text-gray-400 dark:placeholder:text-gray-400
 									   text-sm leading-normal
 									   resize-none overflow-y-auto
@@ -306,13 +306,13 @@
 									}
 								}}
 							/>
-							
-							<Button 
+
+							<Button
 								type="submit"
 								class="absolute right-2 bottom-3
 									   p-2 rounded-full
 									   bg-[#dd1c1a] hover:bg-[#dd1c1a]/90
-									   text-white disabled:bg-gray-400 
+									   text-white disabled:bg-gray-400
 									   transform hover:scale-105
 									   transition-all duration-200
 									   disabled:hover:scale-100
@@ -329,8 +329,8 @@
 							UniLLM can make mistakes. Consider checking important information.
 						</p>
 						{#if !isLoading && $chatMessages.messages.length > 0}
-							<button 
-								class="text-xs text-[#dd1c1a] hover:text-[#dd1c1a]/80 dark:text-[#dd1c1a]/90 
+							<button
+								class="text-xs text-[#dd1c1a] hover:text-[#dd1c1a]/80 dark:text-[#dd1c1a]/90
 									   hover:underline transition-colors duration-200"
 								on:click={() => {/* Add regenerate functionality */}}
 							>

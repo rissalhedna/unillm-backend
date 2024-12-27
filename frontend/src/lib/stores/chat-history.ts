@@ -26,13 +26,13 @@ export const updateChatTitle = async (id: string, title: string) => {
 
 export const loadMessages = async (chatId: string) => {
 	if (get(chatMessages).chatState !== 'idle') return;
-	
+
 	const response = await fetch(`/api/chats/${chatId}`);
 	const chat = await response.json();
-	
-	chatMessages.replace({ 
-		messages: chat.messages.map(({ role, content }: { role: string, content: string }) => ({ role, content })), 
-		chatState: 'idle' 
+
+	chatMessages.replace({
+		messages: chat.messages.map(({ role, content }: { role: string, content: string }) => ({ role, content })),
+		chatState: 'idle'
 	});
 	activeChat.set(chatId);
 };
