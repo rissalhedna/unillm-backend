@@ -19,8 +19,7 @@ class QueryResponse(BaseModel):
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 QDRANT_URL = os.getenv("QDRANT_URL")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
-BACKEND_HOST = os.getenv("BACKEND_HOST", "127.0.0.1")
-BACKEND_PORT = os.getenv("BACKEND_PORT", "8000")
+ORIGIN = os.getenv("ORIGIN")
 
 # CORS Origins
 CORS_ORIGINS = [

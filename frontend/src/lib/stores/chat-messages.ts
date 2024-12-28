@@ -2,6 +2,8 @@ import { get, writable } from 'svelte/store';
 import { activeChat } from './chat-history';
 import { get as getStore } from 'svelte/store';
 import { SOURCE_DELIMITER } from '$lib/constants';
+import { PUBLIC_BACKEND_URL } from '$env/static/public';
+
 export interface ChatTranscript {
 	messages: ChatCompletionRequestMessage[];
 	chatState: 'idle' | 'loading' | 'error' | 'message';
@@ -26,8 +28,8 @@ const set = async (query: string) => {
 
 	try {
 		console.log('🔄 Fetching response from API...');
-		console.log(import.meta.env.BACKEND_URL);
-		const response = await fetch(`https://unillm-production.up.railway.app/query`, {
+		console.log(PUBLIC_BACKEND_URL);
+		const response = await fetch(`${PUBLIC_BACKEND_URL}/query`, {
 			method: "POST",
 			body: JSON.stringify({
 				messages: currentMessages,
