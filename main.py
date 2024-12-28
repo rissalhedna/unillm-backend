@@ -19,10 +19,16 @@ client = initialize_qdrant_client(QDRANT_URL, QDRANT_API_KEY, ENVIRONMENT)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=[
+        ORIGIN,
+        "https://unillm-frontend-2majawhec-rissals-projects.vercel.app",
+        "https://unillm-rissals-projects.vercel.app"
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 @app.post("/query", response_model=QueryResponse)

@@ -34,7 +34,10 @@ const set = async (query: string) => {
 			body: JSON.stringify({
 				messages: currentMessages,
 			}),
-			headers: { 'Content-Type': 'application/json' },
+			headers: { 
+				'Content-Type': 'application/json',
+				'Accept': 'application/json',
+			},
 		});
 		const data = await response.json();
 		console.log('🔄 Response from API:', data);
