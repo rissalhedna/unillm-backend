@@ -25,9 +25,10 @@ BACKEND_PORT = os.getenv("BACKEND_PORT", "8000")
 # CORS Origins
 CORS_ORIGINS = [
     "http://localhost:3000",
-    "https://unillm-frontend-2majawhec-rissals-projects.vercel.app/",
-    "https://unillm-rissals-projects.vercel.app/",
+    "https://unillm-frontend-2majawhec-rissals-projects.vercel.app",
+    "https://unillm-rissals-projects.vercel.app",
     "http://localhost:8000",
+    "https://unillm-production.up.railway.app"
 ]
 
 # Default Model and Collection

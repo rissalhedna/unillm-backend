@@ -27,7 +27,7 @@ const set = async (query: string) => {
 	try {
 		console.log('🔄 Fetching response from API...');
 		console.log(import.meta.env.BACKEND_URL);
-		const response = await fetch(`http://localhost:8000/query`, {
+		const response = await fetch(`https://unillm-production.up.railway.app/query`, {
 			method: "POST",
 			body: JSON.stringify({
 				messages: currentMessages,
