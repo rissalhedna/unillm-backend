@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM python:3.11-slim AS builder
+FROM python:3.11-slim AS build
 
 WORKDIR /app
 
@@ -14,12 +14,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy the Python packages from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /usr/local/bin/ /usr/local/bin/
-COPY --from=builder /app /app
+COPY --from=build /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY --from=build /usr/local/bin/ /usr/local/bin/
+COPY --from=build /app /app
 
 EXPOSE 8000
 
-# Make sure the entrypoint is using the full path
-CMD ["/usr/local/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

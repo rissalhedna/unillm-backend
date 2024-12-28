@@ -1,5 +1,5 @@
 # pre-commit
-fastapi
+fastapi[standard]
 llama-index
 llama-index-llms-openai
 llama-index-llms-huggingface
