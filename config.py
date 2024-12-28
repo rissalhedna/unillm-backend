@@ -23,7 +23,7 @@ ORIGIN = os.getenv("ORIGIN")
 
 # CORS Origins
 CORS_ORIGINS = [
-    "http://localhost:3000",
+    ORIGIN,
     "https://unillm-frontend-2majawhec-rissals-projects.vercel.app",
     "https://unillm-rissals-projects.vercel.app",
     "http://localhost:8000",
