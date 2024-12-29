@@ -1,0 +1,29 @@
+# Development files and directories
+node_modules/
+.git/
+.gitignore
+.env
+.env.*
+!.env.example
+
+# Testing
+tests/
+coverage/
+*.test.js
+*.spec.js
+
+# Build artifacts
+__pycache__/
+.venv/
+temporary_folder/
+
+# Documentation and configuration
+readMe.md
+docker-compose.yml
+dockerfile
+.pre-commit-config.yaml
+pyproject.toml
+
+# Development tools
+notebooks/
+scripts/
