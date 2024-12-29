@@ -5,10 +5,16 @@ from pydantic import BaseModel
 
 load_dotenv()
 
+# Default Model and Collection
+DEFAULT_COLLECTION_NAME = "study-in-germany"
+DEFAULT_MODEL_TYPE = "openai"
+DEFAULT_HUGGINGFACE_MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
+
+
 class ChatContext(BaseModel):
     messages: List[dict]
     collection_name: Optional[str] = "study-in-germany"
-    model_type: Optional[str] = "huggingface"
+    model_type: Optional[str] = DEFAULT_MODEL_TYPE
     huggingface_model_name: Optional[str] = "meta-llama/Meta-Llama-3-8B-Instruct"
 
 class QueryResponse(BaseModel):
@@ -30,7 +36,4 @@ CORS_ORIGINS = [
     "https://unillm-production.up.railway.app"
 ]
 
-# Default Model and Collection
-DEFAULT_COLLECTION_NAME = "study-in-germany"
-DEFAULT_MODEL_TYPE = "openai"
-DEFAULT_HUGGINGFACE_MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
+

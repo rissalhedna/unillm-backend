@@ -1,12 +1,11 @@
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.utils.router import CentralController
 from app.utils.storage_utils import initialize_qdrant_client
 from config import (
-    QDRANT_API_KEY, QDRANT_URL, ENVIRONMENT,
-    CORS_ORIGINS, ChatContext, QueryResponse,
+    QDRANT_API_KEY, QDRANT_URL, ENVIRONMENT, ChatContext, QueryResponse,
     ORIGIN
 )
 
