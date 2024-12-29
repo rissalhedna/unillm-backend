@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from app.utils.storage_utils import query_qdrant
 from constants import CENTRAL_LLM_MODEL, CONFIDENCE_SCORE_THRESHOLD
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from fastapi import HTTPException
 
 
 class QueryClassification(BaseModel):
@@ -113,27 +114,30 @@ class CentralController:
     async def _handle_germany_related_query(
         self, client, latest_query, query_qdrant
     ) -> dict:
-        qdrant_response = query_qdrant(
-            client=client, collection_name="study-in-germany", query=latest_query
-        )
+        try:
+            qdrant_response = query_qdrant(
+                client=client, collection_name="study-in-germany", query=latest_query
+            )
+            
+            if isinstance(qdrant_response, dict) and "error" in qdrant_response:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Database query failed: {qdrant_response['error']}"
+                )
+            
+            context_prompt = self._create_context_prompt(
+                qdrant_response.get("context", "No context available")
+            )
+            chat_response = await self.llm.ainvoke(
+                [context_prompt, ChatMessage(role="user", content=latest_query)]
+            )
 
-        if isinstance(qdrant_response, dict) and "error" in qdrant_response:
             return {
-                "answer": f"Database query failed: {qdrant_response['error']}",
-                "sources": [],
+                "answer": chat_response.content,
+                "sources": qdrant_response.get("sources", []),
             }
-
-        context_prompt = self._create_context_prompt(
-            qdrant_response.get("context", "No context available")
-        )
-        chat_response = await self.llm.ainvoke(
-            [context_prompt, ChatMessage(role="user", content=latest_query)]
-        )
-
-        return {
-            "answer": chat_response.content,
-            "sources": qdrant_response.get("sources", []),
-        }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
     def _create_context_prompt(self, context: str) -> ChatMessage:
         return ChatMessage(

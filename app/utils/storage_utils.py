@@ -2,6 +2,7 @@ import logging
 from llama_index.core.indices.vector_store.base import VectorStoreIndex
 from llama_index.vector_stores.qdrant.base import QdrantVectorStore
 from qdrant_client import QdrantClient
+from fastapi import HTTPException
 
 from constants import MAX_SOURCES
 
@@ -9,10 +10,10 @@ logger = logging.getLogger(__name__)
 
 def query_qdrant(client, collection_name, query):
     if not _test_qdrant_connection(client):
-        return {
-            "answer": "Database connection failed. Please ensure Qdrant server is running.",
-            "sources": [],
-        }
+        raise HTTPException(
+            status_code=503,
+            detail="Database connection failed. Please ensure Qdrant server is running."
+        )
 
     try:
         vector_store = QdrantVectorStore(
@@ -32,7 +33,10 @@ def query_qdrant(client, collection_name, query):
 
     except Exception as e:
         logger.error(f"Error during query processing: {e}", exc_info=True)
-        return {"error": "Query processing failed", "details": str(e)}
+        raise HTTPException(
+            status_code=500,
+            detail=f"Query processing failed: {str(e)}"
+        )
 
 
 def _test_qdrant_connection(client) -> bool:

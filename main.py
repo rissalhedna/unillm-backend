@@ -37,9 +37,10 @@ async def query_endpoint(chatContext: ChatContext):
         model_type=chatContext.model_type,
         huggingface_model_name=chatContext.huggingface_model_name
     )
+    client = initialize_qdrant_client(QDRANT_URL, QDRANT_API_KEY, ENVIRONMENT)
     
     result = await central_controller.process_query(
-        client = initialize_qdrant_client(QDRANT_URL, QDRANT_API_KEY, ENVIRONMENT), messages=chatContext.messages
+        client = client, messages=chatContext.messages
     )
     
     if not result or "answer" not in result or "sources" not in result:
