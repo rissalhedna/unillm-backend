@@ -8,6 +8,7 @@ from config import (
     QDRANT_API_KEY, QDRANT_URL, ENVIRONMENT, ChatContext, QueryResponse,
     ORIGIN
 )
+from fastapi.responses import JSONResponse
 
 load_dotenv()
 
@@ -16,7 +17,6 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        QDRANT_URL,
         ORIGIN,
         "https://unillm-rissals-projects.vercel.app",
         "https://unillm-frontend-git-main-rissals-projects.vercel.app/"
@@ -33,7 +33,7 @@ async def query_endpoint(chatContext: ChatContext):
     if not chatContext.messages:
         raise HTTPException(status_code=400, detail="Query text is required.")
     
-    central_controller = CentralController(
+    central_controller =    CentralController(
         model_type=chatContext.model_type,
         huggingface_model_name=chatContext.huggingface_model_name
     )
@@ -53,3 +53,12 @@ async def query_endpoint(chatContext: ChatContext):
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Germany Study Info API"}
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error"},
+        headers={"Access-Control-Allow-Origin": ORIGIN}  # Replace with specific origins if needed
+    )
