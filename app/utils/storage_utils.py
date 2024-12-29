@@ -1,5 +1,4 @@
 import logging
-
 from llama_index.core.indices.vector_store.base import VectorStoreIndex
 from llama_index.vector_stores.qdrant.base import QdrantVectorStore
 from qdrant_client import QdrantClient

@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-
+from loguru import logger
 from app.utils.router import CentralController
 from app.utils.storage_utils import initialize_qdrant_client
 from config import (
@@ -13,16 +13,13 @@ load_dotenv()
 
 app = FastAPI()
 
-# Initialize Qdrant client
-client = initialize_qdrant_client(QDRANT_URL, QDRANT_API_KEY, ENVIRONMENT)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         QDRANT_URL,
         ORIGIN,
-        "https://unillm-frontend-2majawhec-rissals-projects.vercel.app",
-        "https://unillm-rissals-projects.vercel.app"
+        "https://unillm-rissals-projects.vercel.app",
+        "https://unillm-frontend-git-main-rissals-projects.vercel.app/"
     ],
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
@@ -42,7 +39,7 @@ async def query_endpoint(chatContext: ChatContext):
     )
     
     result = await central_controller.process_query(
-        client, chatContext.messages
+        client = initialize_qdrant_client(QDRANT_URL, QDRANT_API_KEY, ENVIRONMENT), messages=chatContext.messages
     )
     
     if not result or "answer" not in result or "sources" not in result:
