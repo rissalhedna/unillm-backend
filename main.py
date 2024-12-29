@@ -6,7 +6,7 @@ from app.utils.router import CentralController
 from app.utils.storage_utils import initialize_qdrant_client
 from config import (
     QDRANT_API_KEY, QDRANT_URL, ENVIRONMENT, ChatContext, QueryResponse,
-    ORIGIN
+    ORIGIN, CORS_ORIGINS
 )
 from fastapi.responses import JSONResponse
 
@@ -56,9 +56,15 @@ async def root():
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    origin = request.headers.get("origin")
+    if origin and origin in CORS_ORIGINS:
+        headers = {"Access-Control-Allow-Origin": origin}
+    else:
+        headers = {"Access-Control-Allow-Origin": ORIGIN}  # Default origin
+    
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={"detail": "Internal Server Error"},
-        headers={"Access-Control-Allow-Origin": ORIGIN}  # Replace with specific origins if needed
+        headers=headers
     )
