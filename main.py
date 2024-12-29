@@ -19,6 +19,7 @@ client = initialize_qdrant_client(QDRANT_URL, QDRANT_API_KEY, ENVIRONMENT)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        QDRANT_URL,
         ORIGIN,
         "https://unillm-frontend-2majawhec-rissals-projects.vercel.app",
         "https://unillm-rissals-projects.vercel.app"
