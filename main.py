@@ -33,7 +33,7 @@ async def query_endpoint(chatContext: ChatContext):
     if not chatContext.messages:
         raise HTTPException(status_code=400, detail="Query text is required.")
     
-    central_controller =    CentralController(
+    central_controller = CentralController(
         model_type=chatContext.model_type,
         huggingface_model_name=chatContext.huggingface_model_name
     )
