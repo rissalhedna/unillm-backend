@@ -15,12 +15,10 @@ A chatbot application to provide information for students in Germany, built with
 - Python 3.8+
 - Node.js and npm
 - Git
-- Docker (optional, for containerized backend)
+- Docker
 
 ## Installation
 
-### Option 1: Local Installation
-
 1. Clone the repository:
 
 ```bash
@@ -28,44 +26,44 @@ git clone https://github.com/rissalhedna/unillm.git
 cd unillm
 ```
 
-2. Set up backend:
+2. Pull the required Docker images:
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows, use: venv\Scripts\activate
-pip install -r requirements.txt
-pip install pre-commit
-pre-commit install
+docker compose pull
 ```
 
-3. Set up frontend:
+3. Start the database and Qdrant services:
+
+```bash
+docker compose up -d
+```
+
+4. Set up frontend:
 
 ```bash
 cd frontend
 npm install
+
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
 ```
 
-### Option 2: Docker Backend
+The services will be available at:
 
-1. Clone the repository:
+- PostgreSQL: localhost:5432
+- Qdrant: localhost:6333
 
-```bash
-git clone https://github.com/rissalhedna/unillm.git
-cd unillm
+## Environment Setup
+
+Make sure your `frontend/.env` file contains:
+
 ```
-
-2. Build and start the backend container:
-
-```bash
-docker compose build
-docker compose up -d  # The backend will run on localhost:8000
-```
-
-3. Set up frontend:
-
-```bash
-cd frontend
-npm install
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+DIRECT_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+QDRANT_URL="http://localhost:6333"
 ```
 
 ## Development

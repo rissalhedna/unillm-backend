@@ -68,3 +68,14 @@ client_secrets.json
 .qdrant/
 .vercel/
 .vercel
+
+# prisma
+prisma/dev.db
+prisma/migrations
+
+# qdrant
+qdrant_data/
+
+# postgres
+postgres_data/
+
