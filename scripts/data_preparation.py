@@ -1,7 +1,8 @@
 import json
 import logging
 from typing import Optional
-from llama_cloud import SentenceSplitter
+
+from llama_index.core.node_parser.text.sentence import SentenceSplitter
 from llama_index.core import StorageContext
 from llama_index.core.indices.vector_store.base import VectorStoreIndex
 from llama_index.core.schema import Document
@@ -69,7 +70,6 @@ def _store_documents(documents: list, storage_context: StorageContext):
         separator=" ",
         paragraph_separator="\n",
         secondary_chunking_regex=None,
-        class_name=None,
     )  # type: ignore
 
     VectorStoreIndex.from_documents(

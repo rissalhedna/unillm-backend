@@ -1,21 +1,32 @@
-# uniLLM: Project plan
+# uniLLM Backend
 
-# German Student Info Chatbot
-
-A chatbot application to provide information for students in Germany, built with FastAPI, Svelte, and LlamaIndex.
+A FastAPI-based backend service for the German Student Info Chatbot, providing RAG (Retrieval-Augmented Generation) capabilities with vector search and LLM integration.
 
 ## Table of Contents
 
+- [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Development](#development)
+- [API Endpoints](#api-endpoints)
+- [Data Pipeline](#data-pipeline)
+- [Deployment](#deployment)
+
+## Overview
+
+The uniLLM backend is built with:
+
+- **FastAPI** - Modern, fast web framework for building APIs
+- **LlamaIndex** - RAG framework for document indexing and retrieval
+- **Qdrant** - Vector database for semantic search
+- **OpenAI GPT-4** - Large language model for response generation
 
 ## Prerequisites
 
 - Python 3.8+
-- Node.js and npm
+- Docker and Docker Compose
 - Git
-- Docker
 
 ## Installation
 
@@ -23,260 +34,209 @@ A chatbot application to provide information for students in Germany, built with
 
 ```bash
 git clone https://github.com/rissalhedna/unillm.git
-cd unillm
+cd unillm-backend
 ```
 
-2. Pull the required Docker images:
+2. Create and activate a virtual environment:
 
 ```bash
-docker compose pull
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
-3. Start the database and Qdrant services:
+3. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. Start the required services:
 
 ```bash
 docker compose up -d
 ```
 
-4. Set up frontend:
+This will start:
 
-```bash
-cd frontend
-npm install
+- PostgreSQL database on port 5432
+- Qdrant vector database on port 6333
 
-# Generate Prisma client
-npx prisma generate
+## Configuration
 
-# Run database migrations
-npx prisma migrate dev
-```
+Create a `.env` file in the root directory with the following variables:
 
-The services will be available at:
+```env
+# Database
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
 
-- PostgreSQL: localhost:5432
-- Qdrant: localhost:6333
+# Qdrant Vector Database
+QDRANT_HOST=localhost
+QDRANT_PORT=6333
+QDRANT_URL=http://localhost:6333
 
-## Environment Setup
+# OpenAI API
+OPENAI_API_KEY=your_openai_api_key_here
 
-Make sure your `frontend/.env` file contains:
-
-```
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
-DIRECT_URL="postgresql://postgres:postgres@localhost:5432/postgres"
-QDRANT_URL="http://localhost:6333"
+# Environment
+DEV=dev  # or "prod" for production
 ```
 
 ## Development
 
-### Option 1: Local Development
+### Local Development
 
-1. Start the backend server:
-
-```bash
-cd ..
-fastapi dev main.py  # The app runs on localhost:8000
-```
-
-2. In a new terminal, start the frontend:
+1. Start the development server:
 
 ```bash
-cd frontend
-npm run dev  # The frontend runs on localhost:3000
+fastapi dev main.py
 ```
 
-3. Access the application at `http://localhost:3000`.
+The API will be available at `http://localhost:8000`
 
-4. Before committing changes, run pre-commit hooks:
+2. Access the interactive API documentation:
+   - Swagger UI: `http://localhost:8000/docs`
+   - ReDoc: `http://localhost:8000/redoc`
+
+### Docker Development
+
+1. Build and run with Docker:
+
+```bash
+docker compose up --build
+```
+
+### Code Quality
+
+Before committing changes, run pre-commit hooks:
 
 ```bash
 pre-commit run --all-files
 ```
 
-### Option 2: Docker Development
+## API Endpoints
 
-1. Start the backend using Docker:
+### Chat Endpoints
 
-```bash
-docker compose up -d  # The backend runs on localhost:8000
-```
+- `POST /chat` - Send a message to the chatbot
+- `GET /chats` - Retrieve chat history
+- `GET /chats/{chat_id}` - Get specific chat conversation
 
-2. In a new terminal, start the frontend:
+### Health Check
 
-```bash
-cd frontend
-npm run dev  # The frontend runs on localhost:3000
-```
+- `GET /health` - API health status
 
-3. Access the application at `http://localhost:3000`.
+### Documentation
+
+- `GET /docs` - Swagger UI documentation
+- `GET /redoc` - ReDoc documentation
 
 ## Data Pipeline
 
-The data processing pipeline consists of two main components:
+The backend includes a comprehensive data processing pipeline for managing the knowledge base:
 
-1. Web scraping using Scrapy (located in `/scripts` folder)
-2. Data processing and vectorization (located in `/notebooks/scraping_cleaning_pipeline.ipynb`)
+### Web Scraping
 
-To add new data to the system:
+Located in `/scripts` folder:
 
-1. Ensure environment variables are set up in `.env`:
+- `handbook_germany_crawler.py` - Scrapes handbook-germany.de
+- `study_in_germany_crawler.py` - Scrapes study-in-germany.de
 
-```
-QDRANT_HOST=your_qdrant_host
-QDRANT_PORT=your_qdrant_port
-OPENAI_API_KEY=your_openai_key  # For embedding generation
-DEV=["prod", "dev"]
-```
+### Data Processing
 
-2. Install required browser for web scraping:
+The pipeline processes data through:
+
+1. **Web Scraping**: Automated crawlers collect information from German study websites
+2. **Data Cleaning**: Raw data is processed and cleaned
+3. **Text Chunking**: Documents are split into appropriate chunks for embeddings
+4. **Vectorization**: Text chunks are converted to embeddings using OpenAI
+5. **Storage**: Embeddings are stored in Qdrant vector database
+
+### Running the Pipeline
+
+1. Install browser dependencies:
 
 ```bash
-playwright install  # Installs all supported browsers
-# Or for a specific browser:
 playwright install chromium
 ```
 
-3. Run the Scrapy scrapers from the scripts folder:
+2. Run scrapers:
 
 ```bash
 cd scripts
-scrapy runspider [scraper_file]
+python handbook_germany_crawler.py
+python study_in_germany_crawler.py
 ```
 
-This will generate JSON files with the raw scraped data.
+3. Process the data using the notebook:
 
-4. Process the data using the notebook:
+```bash
+jupyter notebook notebooks/scraping_cleaning_pipeline.ipynb
+```
 
-- Open `/notebooks/scraping_cleaning_pipeline.ipynb`
-- This notebook contains all the logic to:
-  - Clean and preprocess the scraped data
-  - Chunk the text into appropriate sizes
-  - Generate embeddings
-  - Save the data into Qdrant vector database
+## Architecture
 
-Make sure to run the notebook cells in order and verify that all environment variables are properly set before processing the data.
+```
+User Query → FastAPI → LlamaIndex → Qdrant (Vector Search) → OpenAI GPT-4 → Response
+```
+
+### Key Components
+
+- **Query Processing**: FastAPI receives and validates user queries
+- **RAG System**: LlamaIndex orchestrates retrieval and generation
+- **Vector Search**: Qdrant finds relevant document chunks
+- **Response Generation**: OpenAI GPT-4 generates contextual responses
+- **Fallback System**: Search engine fallback for queries outside knowledge base
+
+## Deployment
+
+### Production Deployment
+
+1. Set environment variables for production
+2. Use Docker for containerized deployment:
+
+```bash
+docker build -t unillm-backend .
+docker run -p 8000:8000 unillm-backend
+```
+
+### Deployment Platforms
+
+- **Railway**: Simple deployment with database support
+- **Linode**: Cost-effective VPS hosting
+- **Docker**: Containerized deployment
 
 ## Current Status
 
-The chatbot is currently in active development with the following status:
-
 ✅ Working Features:
 
-- Basic chatbot functionality
-- Integration with Qdrant database
-- Information retrieval from study-in-germany website
+- FastAPI backend with async support
+- RAG system with Qdrant integration
+- Document indexing and retrieval
+- OpenAI GPT-4 integration
+- Web scraping pipeline
+- Docker containerization
 
 🔧 Known Issues:
 
-- LLM is not aware of previous messages
+- Chat history persistence needs improvement
+- Search engine fallback system in development
 
 🚧 Upcoming Features:
 
-- Search engine fallback system
+- Enhanced search engine fallback
 - CV matching functionality
-- Enhanced data processing pipeline
-- Improved response accuracy
-- Regular data updates
+- Improved caching system
+- Rate limiting and authentication
+- Monitoring and logging improvements
 
-## Roadmap
+## Contributing
 
-### Current Phase: Phase 1 (In Progress)
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and pre-commit hooks
+5. Submit a pull request
 
-### Phase 1: Core Chatbot Development
+## License
 
-- ✅ Set up basic infrastructure
-- ✅ Implement RAG system
-- ✅ Develop basic frontend (similar to ChatGPT)
-- 🚧 Integrate search engine fallback
-
-### Phase 2: Data Collection and Optimization
-
-- Gather and process information about studying in Germany
-- Optimize RAG system based on user feedback
-- Recursively updating specific data (probably through a crawler - check perplexity crawler)
-- Refine the dataset for better quality
-- Improve the indexing and document encoding and retrieval
-
-### Phase 3: CV Matching Feature (Bonus)
-
-- Develop CV upload and processing functionality
-- Implement university matching algorithm
-
-### Phase 4: Testing and Refinement
-
-- Conduct thorough testing
-- Gather user feedback
-
-### Phase 5: Deployment and Maintenance
-
-- Deploy to production
-- Set up basic monitoring
-
-## Minimal Cost Tech Stack
-
-### Frontend:
-
-- Framework: Svelte
-- Hosting: Netlify (free tier)
-
-### Backend:
-
-- Framework: FastAPI
-- Hosting: Linode (minimal plan, ~$5/month)
-
-### Vector Database:
-
-- Qdrant (self-hosted on Linode instance)
-
-### LLM:
-
-- Open-source model: OpenAI gpt 4
-
-### RAG Framework:
-
-- LlamaIndex (open-source)
-
-### Search Engine Fallback:
-
-- SerpApi or Perplexica (100 free searches/month)
-
-### Version Control and CI/CD:
-
-- Git for version control
-- GitHub Actions for CI/CD (free for public repositories)
-
-### Document Processing (for CV feature):
-
-- PyPDF2 for PDF parsing (open-source)
-- spaCy for NLP tasks (open-source)
-
-## Overview of the Application
-
-### Core Chatbot System:
-
-- User Interface: Svelte-based chat interface
-- Query Processing: FastAPI backend receives user queries
-- RAG System:
-  - LlamaIndex processes the query
-  - Qdrant performs vector similarity search
-  - LLaMA 3 7B generates response based on retrieved context
-- Search Engine Fallback:
-  - Triggered when RAG system doesn't find relevant information
-  - Uses SerpApi to fetch search results
-
-### CV Matching Feature (Bonus):
-
-- CV Upload: Allow users to upload CV in PDF format
-- CV Processing:
-  - Extract relevant information using PyPDF2 and spaCy
-  - Generate embeddings for CV content
-- University Matching:
-  - Compare CV embeddings with university requirements/profiles
-  - Rank universities based on similarity scores
-
-### Data Management:
-
-- Regular manual updates to the knowledge base about German universities and student life (for now)
-
-### Monitoring and Improvement:
-
-- Use basic logging and manual review of chat logs for improvements (Logger)
+This project is licensed under the MIT License.
