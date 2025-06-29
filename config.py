@@ -14,8 +14,8 @@ DEFAULT_HUGGINGFACE_MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
 class ChatContext(BaseModel):
     messages: List[dict]
     collection_name: Optional[str] = "study-in-germany"
-    model_type: Optional[str] = DEFAULT_MODEL_TYPE
-    huggingface_model_name: Optional[str] = "meta-llama/Meta-Llama-3-8B-Instruct"
+    model_name: Optional[str] = "gpt-4"
+    temperature: Optional[float] = 0.0
 
 class QueryResponse(BaseModel):
     answer: str

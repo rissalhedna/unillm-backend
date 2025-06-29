@@ -48,7 +48,7 @@ def _test_qdrant_connection(client) -> bool:
         return False
 
 
-def _retrieve_nodes(index, query) -> list:
+def _retrieve_nodes(index: VectorStoreIndex, query: str) -> list:
     retriever = index.as_retriever(similarity_top_k=MAX_SOURCES, filters=None)
     return retriever.retrieve(query)
 
