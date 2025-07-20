@@ -74,6 +74,6 @@ def _filter_unique_sources(nodes: list) -> list:
 
 def initialize_qdrant_client(url, api_key, environment):
     try:
-        return QdrantClient(host="localhost", port=6333) if environment == "dev" else QdrantClient(url, api_key=api_key)
+        return QdrantClient(url="http://localhost:6333") if environment == "dev" else QdrantClient(url, api_key=api_key)
     except Exception as e:
         raise RuntimeError(f"Error initializing Qdrant client: {str(e)}")

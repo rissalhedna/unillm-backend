@@ -7,7 +7,7 @@ from app.utils.router import CentralController
 from app.utils.storage_utils import initialize_qdrant_client
 from config import (
     QDRANT_API_KEY, QDRANT_URL, ENVIRONMENT, ChatContext,
-    ORIGIN, CORS_ORIGINS
+    ORIGIN
 )
 from fastapi.responses import JSONResponse
 import json
@@ -19,9 +19,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        ORIGIN,
-        "https://unillm-rissals-projects.vercel.app",
-        "https://unillm-frontend-git-main-rissals-projects.vercel.app/"
+        "*"
     ],
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
@@ -35,7 +33,7 @@ async def stream_response(stream_response, sources):
     """Convert OpenAI streaming response to our format"""
     try:
         for source in sources:
-            yield f"source: {source}\n\n"
+            yield f"source:{json.dumps(source)}"
         async for chunk in stream_response:
             if chunk.choices[0].delta.content:
                 content = chunk.choices[0].delta.content
@@ -94,12 +92,7 @@ async def root():
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    origin = request.headers.get("origin")
-    if origin and origin in CORS_ORIGINS:
-        headers = {"Access-Control-Allow-Origin": origin}
-    else:
-        headers = {"Access-Control-Allow-Origin": ORIGIN}  # Default origin
-    
+    headers = {"Access-Control-Allow-Origin": "*"}
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,

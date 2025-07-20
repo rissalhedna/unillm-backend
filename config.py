@@ -26,14 +26,3 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 QDRANT_URL = os.getenv("QDRANT_URL")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 ORIGIN = os.getenv("ORIGIN")
-
-# CORS Origins
-CORS_ORIGINS = [
-    ORIGIN,
-    "https://unillm-frontend-2majawhec-rissals-projects.vercel.app",
-    "https://unillm-rissals-projects.vercel.app",
-    "http://localhost:8000",
-    "https://unillm-production.up.railway.app"
-]
-
-

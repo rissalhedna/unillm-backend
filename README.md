@@ -67,12 +67,12 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Database
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/postgres
 
 # Qdrant Vector Database
-QDRANT_HOST=localhost
+QDRANT_HOST=127.0.0.1
 QDRANT_PORT=6333
-QDRANT_URL=http://localhost:6333
+QDRANT_URL=http://127.0.0.1:6333
 
 # OpenAI API
 OPENAI_API_KEY=your_openai_api_key_here
@@ -91,11 +91,11 @@ DEV=dev  # or "prod" for production
 fastapi dev main.py
 ```
 
-The API will be available at `http://localhost:8000`
+The API will be available at `http://127.0.0.1:8000`
 
 2. Access the interactive API documentation:
-   - Swagger UI: `http://localhost:8000/docs`
-   - ReDoc: `http://localhost:8000/redoc`
+   - Swagger UI: `http://127.0.0.1:8000/docs`
+   - ReDoc: `http://127.0.0.1:8000/redoc`
 
 ### Docker Development
 
