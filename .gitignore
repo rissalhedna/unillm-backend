@@ -75,6 +75,7 @@ prisma/migrations
 
 # qdrant
 qdrant_data/
+qdrant_storage/
 
 # postgres
 postgres_data/

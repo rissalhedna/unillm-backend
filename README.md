@@ -167,11 +167,20 @@ python handbook_germany_crawler.py
 python study_in_germany_crawler.py
 ```
 
-3. Process the data using the notebook:
+3. **Important**: Process and transform the data using the notebook:
 
 ```bash
 jupyter notebook notebooks/scraping_cleaning_pipeline.ipynb
 ```
+
+⚠️ **Critical Step**: The notebook must be run in order to:
+
+- Transform the scraped raw data into the proper format
+- Remove personal information and sensitive content
+- Clean and process the data for vector storage
+- Store the processed data in the Qdrant vector database
+
+Without running the notebook, the chatbot will not have access to the knowledge base and cannot provide accurate responses.
 
 ## Architecture
 
